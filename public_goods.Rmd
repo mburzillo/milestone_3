@@ -1,42 +1,9 @@
 ---
-title: "Untitled"
+title: "Summary of Trounstine's Segregation and Inequality in Public Goods"
 author: "Maria Burzillo"
 date: "2/20/2020"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-```
-
-## R Markdown
-
-```{r}
-load("~/Desktop/GOV1006/milestone_3/fin_seg.RData")
-```
-
-```{r Exploring_Data}
-x %>%
-  group_by(cenid, year) %>%
-  count()
-
-x %>%
-  group_by(year) %>%
-  count() %>%
-  ggplot() +
-  geom_path(aes(x = year, y = n)) +
-  geom_point(aes(x = year, y = n))
-  
 
 
-```
-
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
