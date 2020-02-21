@@ -42,20 +42,30 @@ use "fin_seg.dta", clear
 
 ***Column 1
 
-* The following is a fixed effects model regression with clustering around geo_id2 where total census tracts in the city is greater than 1 and Direct General Expenditures (DGE) per capita, CPI adjusted is not equal to 1. This regresses the DGE per capita on the the two-group calculation of Theil's H interpolated. Controls are included for diversity and the % populations of Blacks, Asians, and Latinos to help identify whether it is actually diversity that drives down spending. Demographic controls (Median household income, CPI adjusted, percent local government worker, percent renters interpolated, percent over 65, percent college grads, and log population are also included to help account for the fact that whites and minorities tend to perfer different levels of government spending in general, irrespective of segregation.*
+* The following is a fixed effects model regression with clustering around geo_id2. It mandates that total census tracts in the city is greater than 1, which we want because our measure of evenness of racial spread is constant for cities with only one tract by our definition (which requires comparing tracts within cities). It also mandates that Direct General Expenditures (DGE) per capita, CPI adjusted is not equal to 0, which would be problematic and indicate a potential data error. This regression regresses the DGE per capita on the the two-group calculation of Theil's H interpolated. Controls are included for diversity and the % populations of Blacks, Asians, and Latinos to help identify whether it is actually diversity that drives down spending.These demographic controls also help to account for the fact that whites and minorities tend to perfer different levels of government spending in general. This will help isolate the effects of segregation v. other forms of diversity on public spending. Other controls for Median household income, CPI adjusted, percent over 65, percent college grads, percent local government workers, log population help control for additional factors related to segregationa and expenditure. Controls for percent renters interpolated and Median household income also help to control for the general wealth of cities, which could be a potential driver of public spending. Fixed effects for cities are also included so that the author can examine the effect of segregation in the same city over time, which also helps control for many other factors not otherwise taken into account (such as city age) *
 
 xtreg dgepercap_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & dgepercap_cpi~=0,fe vce(cluster geo_id2)
 
 
 ***predicted effects following Table 2
+
+* estimate predictive margins at the mean of all covariates except for H_citytract_NHW_i, which will be equal to .01 in the first specification and .1 in the second. Doing this to allows us to see the predicted effect on the DGE per capita if all the covariates were at their mean and H_citytract_multi_i were at .01 or .10.*
+
 margins, at((mean) _all H_citytract_NHW_i=(.01 .10))
 
 
 ***Column 2
+
+* This regression is the same as above except instead of using diversity, a new control is added for the five year changes in racial group shares. The goal here is to see whether or not changes in diversity are a driving factor (rather than absolute levels of diversity). *
+
 xtreg dgepercap_cpi H_citytract_NHW_i pctblkpopinterp pctasianpopinterp pctlatinopopinterp chng5pctblk chng5pctlatino chng5pctasian  medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 &  dgepercap_cpi~=0,fe vce(cluster geo_id2)
 
 
+
 ***Column 3
+
+* As in column 3 of table 1, this regression simply adds in a control for  mean ideology of city residents from General Social Survey (GSS) to control for the possibolity that ideology that segregated cities are more ideologically conservative and that the conservative nature of segregated cities is what actually drives the effect. *
+
 xtreg dgepercap_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop ideology_fill if totaltracts>1 &  dgepercap_cpi~=0,fe vce(cluster geo_id2)
 
 
