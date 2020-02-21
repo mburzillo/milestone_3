@@ -1,6 +1,6 @@
 # milestone_3
 
-Datasets and files related to my GOV1006 replication project of Troustine's **Segregation and Inequality in Public Goods (2016).**
+Datasets and files related to my GOV1006 replication project of Troustine's *Segregation and Inequality in Public Goods (2016).*
 
 This repo includes all datasets and original stata do files to replicate the main results as well as the results in the appendices. 
 
