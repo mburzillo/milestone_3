@@ -122,7 +122,7 @@ xtreg genrevownpercap_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pcta
 
 ***Figure 1
 
-* This is the code to generate the highways plot of figure one using the fixed effects regression of highwayspercapNC_cpi on H_citytract_NHW_i. Quietly tells Stata not to show the execution of the subseuqent commands. The margins command estimates the predictive margins at the mean of all covariates for H_citytract_NHW_i ranging from 0 to .5 incremented by .01. marginsplot generates of plot of the calculated margins. xlabel creates axis ticks and labels 0 to .5 incremented by .01, and the xtitle, ytitle, and title label the plot according to the margin() and size() specified within the funcction. plotopts() sets the general color. recast(line) makes the plot a line plot and ciopts(color()) sets the color of the line to gray.recastci(rarea) plots the confidence intervals as an area around the line. graphregion sets the margin to medium-large, and the color of the graph region to white. legendoff turns the legend off, and plotregion sets the color of the plot region to white.*
+* This is the code to generate the highways plot of figure one using the fixed effects regression of highwayspercapNC_cpi on H_citytract_NHW_i. quietly tells Stata not to show the execution of the subseuqent commands. The margins command estimates the predictive margins at the mean of all covariates for H_citytract_NHW_i ranging from 0 to .5 incremented by .01. marginsplot generates of plot of the calculated margins. xlabel creates axis ticks and labels 0 to .5 incremented by .01, and the xtitle, ytitle, and title label the plot according to the margin() and size() specified within the funcction. plotopts() sets the general color. recast(line) makes the plot a line plot and ciopts(color()) sets the color of the line to gray.recastci(rarea) plots the confidence intervals as an area around the line. graphregion sets the margin to medium-large, and the color of the graph region to white. legendoff turns the legend off, and plotregion sets the color of the plot region to white.*
 
 
 xtreg highwayspercapNC_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & highwayspercapNC_cpi~=0, fe vce(cluster geo_id2)
@@ -162,24 +162,27 @@ marginsplot, xlabel(0(.1).5) xtitle("Segregation", margin(medium) size(large)) p
 
 ***Table 4
 
-* table 4 changes wefjknwke *
+*  The following is a fixed effects model regression with clustering once again around geo_id2. Again, the if statements at the end mandate that total census tracts in the city is greater than 1, which we want because our measure of evenness of racial spread is constant for cities with only one tract by our definition (which requires comparing tracts within cities).They also mandate that the DGE per capita, CPI adjsuted  extend (lagged 5 years) is not equal to 0, which would be problematic and indicate a potential data error. The dependent variable here is DGE per capita, CPI adjusted, and it is regressed on the two group calculation of Theil's H, interpolated. Controls are added for diversity, percent population of Blacks, Asians, and Latinos, and median household CPI adjusted income as well as for % local government worker hundreds, percent rentership, percent over 65, percent college graduates, and the log of the population. As in the previous table's regressions, fixed effects for cities are also included so that the author can examine the effect of segregation in the same city over time, which also helps control for many other factors not otherwise taken into account (such as city age). This regression essentially examines the effect of segregation on DGE per capita.*
 
 xtreg dgepercap_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 &  dgepercap_cpi~=0,fe vce(cluster geo_id2)
 
 
 ***Columns 2 & 3
 
+* generates a table of mean percentnonwhit and mean H_citytract_NHW_i by percent non while quintiles. *
+
 table pctnonwht_xtile, c(mean pctnonwht mean H_citytract_NHW_i)
 
 
-***Determine min/max values for each quintile
+***Determine min/max values for each quintile in a table of summary statistics
 
 table pctnonwht_xtile, c(min H_citytract_NHW_i max H_citytract_NHW_i )
 
 
-***Calculate marginal effect of changing from minimum to maximum level of segregation for each quintile
+***Calculate marginal effect of changing from minimum to maximum level of segregation for each quintile: calculates the margins over the quintiles of percent non-white at the means of all the covariates and the min and max values of H_citytract_NHW_i at each quintile. I am not sure exactly what the contrast(atcontrast(r._at)wald) term is doing, and so I will try to find some help on understanding this. It seems to be essentially applying the wald contrast operator to the groups defined by the mean of all the covariates at the min and maxes of all the quintiles of H_citytract_NHW_i.*
 
 ***Columns 4 & 5
+
 
 margins, over(pctnonwht_xtile) at((mean) _all H_citytract_NHW_i=(0 .38726727 .68708962 .76654474 .73449214 .66859493)) contrast(atcontrast(r._at) wald)
 
@@ -196,20 +199,28 @@ margins, over(pctnonwht_xtile) at((mean) _all H_citytract_NHW_i=(0 .38726727 .68
 
 ***Column 1
 
+* This is an instrumental variable regression with DGE per capita, adjusted by the CPI, as the dependent variable and total number of waterways as the instrumental variable for segregation. The instrument includes the log of the population in the first stage because the number of waterways is positively correlated to population and population is positively correlated with segregation. The control variables are the same as those in the regressions for Table 2 except for 2 changes: since the number of waterways does not change, there is no need for city fixed effects. Instead, we include fixed effects for the region and year. A lagged version of the dependent variable (dgepercap_cpilag) is added to the regressions to account for the high correlation between observations for the same city over time and because changes in local budgets typically are incremental (NOTE: why exactly do we do this/why does it help/why not do it in the non-intstrumental regressions?). 
+
 ivreg2 dgepercap_cpi (H_citytract_NHW_i= total_rivs_all logpop ) dgepercap_cpilag diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medincinterp pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp northeast south midwest y5 - y9 if dgepercap_cpi~=0
 
 
 ***Column 2
+
+* this is the same regression as for column 1 but now we use the dependent variable highwayspercapNC_cpi to assess the effect of the instrumental variable on highways per capita *
 
 ivreg2 highwayspercapNC_cpi (H_citytract_NHW_i= total_rivs_all logpop ) highwayspercapNC_cpilag diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medincinterp pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp northeast south midwest y5 - y9 if  highwayspercapNC_cpi~=0
 
 
 ***Column 3
 
+* this is the same regression as for column 1 but now we use the dependent variable policepercapNC_cpi to assess the effect of the instrumental variable on police per capita *
+
 ivreg2 policepercapNC_cpi (H_citytract_NHW_i= total_rivs_all logpop ) policepercapNC_cpilag diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medincinterp pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp northeast south midwest y5 - y9 if  policepercapNC_cpi ~=0 
 
 
 ***Column 4
+
+* this is the same regression as for column 1 but now we use the dependent variable parkspercapNC_cpi to assess the effect of the instrumental variable on parks per capita *
 
 ivreg2 parkspercapNC_cpi (H_citytract_NHW_i= total_rivs_all logpop ) parkspercapNC_cpilag diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medincinterp pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp northeast south midwest y5 - y9 if  parkspercapNC_cpi ~=0 
 
@@ -218,15 +229,21 @@ ivreg2 parkspercapNC_cpi (H_citytract_NHW_i= total_rivs_all logpop ) parkspercap
 
 ***Column 1
 
+* this is the same regression as for column 1 but now we use the dependent variable sewerspercapNC_cpi to assess the effect of the instrumental variable on sewers per capita *
+
 ivreg2 sewerspercapNC_cpi (H_citytract_NHW_i= total_rivs_all logpop ) sewerspercapNC_cpilag diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medincinterp pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp northeast south midwest y5 - y9 if sewerspercapNC_cpi ~=0 
 
 
 ***Column 2
 
+* this is the same regression as for column 1 but now we use the dependent variable welfhoushealthNC_cpi to assess the effect of the instrumental variable on welfare per capita *
+
 ivreg2 welfhoushealthNC_cpi (H_citytract_NHW_i= total_rivs_all logpop ) welfhoushealthNC_cpilag diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medincinterp pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp northeast south midwest y5 - y9 if welfhoushealthNC_cpi ~=0 
 
 
 ***Column 3
+
+* this is the same regression as for column 1 but now we use the dependent variable genrevownpercap_cpi to assess the effect of the instrumental variable on own source revenue per capita *
 
 ivreg2 genrevownpercap_cpi (H_citytract_NHW_i= total_rivs_all logpop ) genrevownpercap_cpilag diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medincinterp pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp northeast south midwest y5 - y9 if genrevownpercap_cpi ~=0 
 
