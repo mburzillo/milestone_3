@@ -162,7 +162,7 @@ marginsplot, xlabel(0(.1).5) xtitle("Segregation", margin(medium) size(large)) p
 
 ***Table 4
 
-* table 4 changes *
+* table 4 changes wefjknwke *
 
 xtreg dgepercap_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 &  dgepercap_cpi~=0,fe vce(cluster geo_id2)
 
