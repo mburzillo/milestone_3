@@ -71,60 +71,89 @@ xtreg dgepercap_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpo
 
 
 ***Table 3
+
+* use the fin_seg dataset *
+
 use "fin_seg.dta", clear
 
 
 ***Column 1
 
+* The following is a fixed effects model regression with clustering once again around geo_id2. Again, the if statements at the end mandate that total census tracts in the city is greater than 1, which we want because our measure of evenness of racial spread is constant for cities with only one tract by our definition (which requires comparing tracts within cities). They also mandate that the highways per capita, CPI adjsuted with no cap extend (lagged 5 years) is not equal to 0, which would be problematic and indicate a potential data error. The dependent variable here is highways per capita, CPI adjsuted with no cap extend (lagged 5 years) and it is regressed on the two group calculation of Theil's H, interpolated. Controls are added for diversity, percent population of Blacks, Asians, and Latinos, and median household CPI adjusted income as well as for % local government worker hundreds, percent rentership, percent over 65, percent college graduates, and the log of the population. This essentially examines the effect of segregation on the specific public good of highways. As in the previous table's regressions, fixed effects for cities are also included so that the author can examine the effect of segregation in the same city over time, which also helps control for many other factors not otherwise taken into account (such as city age) *
+
 xtreg highwayspercapNC_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & highwayspercapNC_cpi~=0, fe vce(cluster geo_id2)
 
 
+
 ***Column 2
+
+* This is the same regression as column 1, but this time the dependent variable is police per capita, CPI adjusted with no cap extend. This essentially examines the effect of segregation on the specific public good of police per capita.*
 
 xtreg policepercapNC_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & policepercapNC_cpi~=0 , fe vce(cluster geo_id2)
 
 
 ***Column 3
 
+* This is again the same regression, but this time the dependent variable is parks per capita, CPI adjusted with no cap extend. This essentially examines the effect of segregation on the specific public good of parks.*
+
 xtreg parkspercapNC_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 &  parkspercapNC_cpi~=0 , fe vce(cluster geo_id2)
 
 
 ***Column 4
+
+* This is again the same regression, but this time the dependent variable is sewers per capita, CPI adjusted with no cap extend. This essentially examines the effect of segregation on the specific public good of sewers.*
 
 xtreg sewerspercapNC_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & sewerspercapNC_cpi~=0 , fe vce(cluster geo_id2)
 
 
 ***Column 5
 
+* This is again the same regression, but this time the dependent variable is Welfare, Health, Housing per capita, CPI adjusted, no cap expend. This essentially examines the effect of segregation on the specific public good of welfare and housing.*
+
 xtreg welfhoushealthNC_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & welfhoushealthNC_cpi~=0, fe vce(cluster geo_id2)
 
 
 ***Column 6
+
+* This is again the same regression, but this time the dependent variable is own source of general revenue per capita, CPI adjusted. This essentially examines the effect of segregation on the specific public good of own source revenue.*
 
 xtreg genrevownpercap_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & genrevownpercap_cpi ~=0, fe vce(cluster geo_id2)
 
 
 ***Figure 1
 
+* This is the code to generate the highways plot of figure one using the fixed effects regression of highwayspercapNC_cpi on H_citytract_NHW_i. Quietly tells Stata not to show the execution of the subseuqent commands. The margins command estimates the predictive margins at the mean of all covariates for H_citytract_NHW_i ranging from 0 to .5 incremented by .01. marginsplot generates of plot of the calculated margins. xlabel creates axis ticks and labels 0 to .5 incremented by .01, and the xtitle, ytitle, and title label the plot according to the margin() and size() specified within the funcction. plotopts() sets the general color. recast(line) makes the plot a line plot and ciopts(color()) sets the color of the line to gray.recastci(rarea) plots the confidence intervals as an area around the line. graphregion sets the margin to medium-large, and the color of the graph region to white. legendoff turns the legend off, and plotregion sets the color of the plot region to white.*
+
+
 xtreg highwayspercapNC_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & highwayspercapNC_cpi~=0, fe vce(cluster geo_id2)
 quietly margins, at((mean) _all H_citytract_NHW_i=(0 (.01) .5))
 marginsplot, xlabel(0(.1).5) xtitle("Segregation", margin(medium) size(large)) plotopts(color(black)) recast(line) ciopts(color(gs14)) recastci(rarea) title("") ytitle("Roads Expenditure Per Capita, $1000s", size(medium) margin(small)) graphregion(margin(medlarge) fcolor(white)) legend(off) plotregion(color(white))
+
+* This generates the same graph for policepercapNC_cpi
 
 xtreg policepercapNC_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & policepercapNC_cpi~=0 , fe vce(cluster geo_id2)
 quietly margins, at((mean) _all H_citytract_NHW_i=(0 (.01) .5))
 marginsplot, xlabel(0(.1).5) xtitle("Segregation", margin(medium) size(large)) plotopts(color(black)) recast(line) ciopts(color(gs14)) recastci(rarea) title("") ytitle("Police Expenditure Per Capita, $1000s", size(medium) margin(small)) graphregion(margin(medlarge) fcolor(white)) legend(off) plotregion(color(white))
 
+* This generates the same graph for parkspercapNC_cpi
+
 xtreg parkspercapNC_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 &  parkspercapNC_cpi~=0 , fe vce(cluster geo_id2)
 quietly margins, at((mean) _all H_citytract_NHW_i=(0 (.01) .5))
 marginsplot, xlabel(0(.1).5) xtitle("Segregation", margin(medium) size(large)) plotopts(color(black)) recast(line) ciopts(color(gs14)) recastci(rarea) title("") ytitle("Parks Expenditure Per Capita, $1000s", size(medium) margin(small)) graphregion(margin(medlarge) fcolor(white)) legend(off) plotregion(color(white))
+
+* This generates the same graph for sewerspercapNC_cpi
 
 xtreg sewerspercapNC_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & sewerspercapNC_cpi~=0 , fe vce(cluster geo_id2)
 quietly margins, at((mean) _all H_citytract_NHW_i=(0 (.01) .5))
 marginsplot, xlabel(0(.1).5) xtitle("Segregation", margin(medium) size(large)) plotopts(color(black)) recast(line) ciopts(color(gs14)) recastci(rarea) title("") ytitle("Sewers Expenditure Per Capita, $1000s", size(medium) margin(small)) graphregion(margin(medlarge) fcolor(white)) legend(off) plotregion(color(white))
 
+* This generates the same graph for welfhoushealthNC_cpi 
+
 xtreg welfhoushealthNC_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & welfhoushealthNC_cpi~=0, fe vce(cluster geo_id2)
 quietly margins, at((mean) _all H_citytract_NHW_i=(0 (.01) .3))
 marginsplot, xlabel(0(.1).3) xtitle("Segregation", margin(medium) size(large)) plotopts(color(black)) recast(line) ciopts(color(gs14)) recastci(rarea) title("") ytitle("Welfare Expenditure Per Capita, $1000s", size(medium) margin(small)) graphregion(margin(medlarge) fcolor(white)) legend(off) plotregion(color(white)) 
+
+* This generates the same graph for genrevownpercap_cpi 
 
 xtreg genrevownpercap_cpi H_citytract_NHW_i diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medinc_cpi pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp logpop if totaltracts>1 & genrevownpercap_cpi ~=0, fe vce(cluster geo_id2)
 quietly margins, at((mean) _all H_citytract_NHW_i=(0 (.01) .5))
@@ -198,6 +227,19 @@ ivreg2 welfhoushealthNC_cpi (H_citytract_NHW_i= total_rivs_all logpop ) welfhous
 ***Column 3
 
 ivreg2 genrevownpercap_cpi (H_citytract_NHW_i= total_rivs_all logpop ) genrevownpercap_cpilag diversityinterp pctblkpopinterp pctasianpopinterp pctlatinopopinterp medincinterp pctlocalgovworker_100 pctrentersinterp pctover65 pctcollegegradinterp northeast south midwest y5 - y9 if genrevownpercap_cpi ~=0 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ***Appendix
